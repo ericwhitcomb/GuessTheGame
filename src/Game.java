@@ -1,70 +1,104 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Game {
 
+    private static int INCORRECT_GUESS_LIMIT = 10;
+
     /**
      * Fields
      */
+    private ArrayList<String> movies;
     private String movie;
-    private int count;
 
+    private int incorrectGuesses;
+
+    private Scanner scanner;
+
+    private String maskedMovie;
+
+    /**
+     * Default Game constructor
+     */
     Game() {
+        this.movies = null;
         this.movie = null;
-    }
-
-    Game(String movie) {
-        this.setMovie(movie);
-    }
-
-    /**
-     * Get movie
-     * @return
-     */
-    public String getMovie() {
-        return movie;
+        this.incorrectGuesses = 0;
+        this.scanner = new Scanner(System.in);
     }
 
     /**
-     * Set movie
-     * @param movie
-     */
-    public void setMovie(String movie) {
-        this.movie = movie;
-    }
-
-    public void print() {
-        System.out.println("You are guessing:" + this.getMovie());
-        System.out.println("You have guessed (" + this.count + ") wrong letters:");
-        System.out.print("Guess a letter:");
-    }
-
-    /**
-     * Main method, runs game
+     * Game constructor
      *
-     * @param args
-     * @throws FileNotFoundException
+     * @param movies
      */
-    public static void main(String[] args) throws FileNotFoundException {
-        File file = new File("movies.txt");
-        Scanner scanner = new Scanner(file);
+    Game(ArrayList<String> movies) {
+        this.setMovies(movies);
+        this.movie = null;
+        this.incorrectGuesses = 0;
+        this.scanner = new Scanner(System.in);
+    }
 
-        ArrayList<String> movies = new ArrayList<String>();
-//        System.out.println(movies.size());
+    /**
+     * Display current game information
+     */
+    private void display() {
+        System.out.println("You are guessing:" + this.movie);
+        System.out.println("You have guessed (" + this.incorrectGuesses + ") wrong letters:");
+    }
 
-        while (scanner.hasNextLine()) {
-            movies.add(scanner.nextLine().trim());
+    /**
+     * Get movie list
+     *
+     * @return movies
+     */
+    public ArrayList<String> getMovies() {
+        return this.movies;
+    }
+
+    /**
+     * Prints movie list to console
+     */
+    public void printMovies() {
+        for (String movie : this.movies) {
+            System.out.println(movie);
         }
-//        System.out.println(movies.size());
+    }
 
-        int n = (int) (Math.random() * movies.size() - 1);
-//        System.out.println(n);
+    private String promptPlayer() {
+        System.out.print("Guess a letter:");
+        return scanner.next();
+    }
 
-//        System.out.println(movies.get(n));
+    /**
+     * Selects a random movie from the movie list
+     *
+     * @return movie
+     */
+    private String selectRandomMovie() {
+        return this.movies.get((int) (Math.random() * movies.size() - 1));
+    }
 
-        Game game = new Game(movies.get(n));
-        game.print();
+    /**
+     * Set movie list
+     *
+     * @param movies
+     */
+    public void setMovies(ArrayList<String> movies) {
+        this.movies = movies;
+    }
+
+    /**
+     * Starts a new game
+     */
+    public void start() {
+        this.movie = this.selectRandomMovie();
+        this.incorrectGuesses = 0;
+
+        while (incorrectGuesses < INCORRECT_GUESS_LIMIT) {
+            this.display();
+            System.out.println(this.promptPlayer());
+            this.incorrectGuesses++;
+        }
     }
 }
