@@ -86,7 +86,7 @@ public class Game {
      *
      * @param movie
      */
-    public void setMovie(String movie) {
+    private void setMovie(String movie) {
         StringJoiner joiner = new StringJoiner(" ");
         String[] words = movie.split(" ");
         for (String word : words) {
