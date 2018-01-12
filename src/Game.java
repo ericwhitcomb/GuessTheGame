@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 public class Game {
 
-    private static int INCORRECT_GUESS_LIMIT = 10;
+    private static int INCORRECT_GUESS_LIMIT = 3;
 
     /**
      * Fields
@@ -80,6 +81,20 @@ public class Game {
     }
 
     /**
+     * Set movie for current game
+     *
+     * @param movie
+     */
+    public void setMovie(String movie) {
+        StringJoiner joiner = new StringJoiner(" ");
+        String[] words = movie.split(" ");
+        for (String word : words) {
+            joiner.add(Character.toUpperCase(word.charAt(0)) + word.substring(1));
+        }
+        this.movie = joiner.toString();
+    }
+
+    /**
      * Set movie list
      *
      * @param movies
@@ -92,13 +107,19 @@ public class Game {
      * Starts a new game
      */
     public void start() {
-        this.movie = this.selectRandomMovie();
+        this.setMovie(this.selectRandomMovie());
+
         this.incorrectGuesses = 0;
 
-        while (incorrectGuesses < INCORRECT_GUESS_LIMIT) {
+        while (this.incorrectGuesses < INCORRECT_GUESS_LIMIT) {
             this.display();
-            System.out.println(this.promptPlayer());
+            String guess = this.promptPlayer();
             this.incorrectGuesses++;
+        }
+
+        if (this.incorrectGuesses >= INCORRECT_GUESS_LIMIT) {
+            System.out.println("You lose!");
+            System.out.println("The movie was '" + this.movie + "'");
         }
     }
 }
