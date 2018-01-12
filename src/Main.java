@@ -11,14 +11,9 @@ public class Main {
         Game game = null;
         try {
             game = new Game(FileManager.getList("movies.txt"));
+            game.start();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-
-        if (game != null) {
-            game.start();
-        } else {
-            System.out.println("There was an error, try again");
         }
     }
 }
