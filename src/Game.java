@@ -44,7 +44,7 @@ public class Game {
      * Display current game information
      */
     private void display() {
-        System.out.println("You are guessing:" + this.movie);
+        System.out.println("You are guessing:" + this.maskedMovie);
         System.out.println("You have guessed (" + this.incorrectGuesses + ") wrong letters:");
     }
 
@@ -77,7 +77,8 @@ public class Game {
      * @return movie
      */
     private String selectRandomMovie() {
-        return this.movies.get((int) (Math.random() * movies.size() - 1));
+//        return this.movies.get((int) (Math.random() * movies.size() - 1));
+        return this.movies.get(3);
     }
 
     /**
@@ -92,6 +93,14 @@ public class Game {
             joiner.add(Character.toUpperCase(word.charAt(0)) + word.substring(1));
         }
         this.movie = joiner.toString();
+
+        char[] characters = this.movie.toCharArray();
+        for (int i = 0; i < characters.length; i++) {
+            if (Character.isLetter(characters[i])) {
+                characters[i] = '_';
+            }
+        }
+        this.maskedMovie = String.copyValueOf(characters);
     }
 
     /**
