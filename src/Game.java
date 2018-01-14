@@ -4,19 +4,19 @@ import java.util.StringJoiner;
 
 public class Game {
 
-    private static int INCORRECT_GUESS_LIMIT = 3;
+    private static final int INCORRECT_GUESS_LIMIT = 3;
+    private static final char MASKED_CHARACTER = '_';
 
     /**
      * Fields
      */
     private ArrayList<String> movies;
     private String movie;
+    private String maskedMovie;
 
-    private int incorrectGuesses;
+    private ArrayList<String> incorrectGuesses;
 
     private Scanner scanner;
-
-    private String maskedMovie;
 
     /**
      * Default Game constructor
@@ -24,7 +24,7 @@ public class Game {
     Game() {
         this.movies = null;
         this.movie = null;
-        this.incorrectGuesses = 0;
+        this.incorrectGuesses = null;
         this.scanner = new Scanner(System.in);
     }
 
@@ -36,7 +36,7 @@ public class Game {
     Game(ArrayList<String> movies) {
         this.setMovies(movies);
         this.movie = null;
-        this.incorrectGuesses = 0;
+        this.incorrectGuesses = null;
         this.scanner = new Scanner(System.in);
     }
 
@@ -45,7 +45,20 @@ public class Game {
      */
     private void display() {
         System.out.println("You are guessing:" + this.maskedMovie);
-        System.out.println("You have guessed (" + this.incorrectGuesses + ") wrong letters:");
+        System.out.print("You have guessed (" + this.incorrectGuesses.size() + ") wrong letters:");
+        for (String s : this.incorrectGuesses) {
+            System.out.print(" " + s.toLowerCase());
+        }
+        System.out.println();
+    }
+
+    private String formatMovie(String movie) {
+        StringJoiner joiner = new StringJoiner(" ");
+        String[] words = movie.split(" ");
+        for (String word : words) {
+            joiner.add(Character.toUpperCase(word.charAt(0)) + word.substring(1));
+        }
+        return joiner.toString();
     }
 
     /**
@@ -87,17 +100,12 @@ public class Game {
      * @param movie
      */
     private void setMovie(String movie) {
-        StringJoiner joiner = new StringJoiner(" ");
-        String[] words = movie.split(" ");
-        for (String word : words) {
-            joiner.add(Character.toUpperCase(word.charAt(0)) + word.substring(1));
-        }
-        this.movie = joiner.toString();
+        this.movie = movie.toLowerCase();
 
         char[] characters = this.movie.toCharArray();
         for (int i = 0; i < characters.length; i++) {
             if (Character.isLetter(characters[i])) {
-                characters[i] = '_';
+                characters[i] = MASKED_CHARACTER;
             }
         }
         this.maskedMovie = String.copyValueOf(characters);
@@ -117,18 +125,36 @@ public class Game {
      */
     public void start() {
         this.setMovie(this.selectRandomMovie());
+        this.incorrectGuesses = new ArrayList<String>();
 
-        this.incorrectGuesses = 0;
-
-        while (this.incorrectGuesses < INCORRECT_GUESS_LIMIT) {
+        while (this.incorrectGuesses.size() < INCORRECT_GUESS_LIMIT) {
             this.display();
             String guess = this.promptPlayer();
-            this.incorrectGuesses++;
+            if (this.movie.contains(guess.toLowerCase())) {
+                char[] chars = this.maskedMovie.toCharArray();
+                for (int i = this.movie.indexOf(guess.toLowerCase()); i >= 0; i = this.movie.indexOf(guess.toLowerCase(), ++i))
+                {
+                    chars[i] = this.movie.charAt(i);
+                }
+                this.maskedMovie = this.formatMovie(new String(chars));
+
+                if (this.maskedMovie.equalsIgnoreCase(this.movie)) {
+                    break;
+                }
+            } else {
+                // add to incorrectGuesses array
+                if (!this.incorrectGuesses.contains(guess.toLowerCase())) {
+                    this.incorrectGuesses.add(guess.toLowerCase());
+                }
+            }
         }
 
-        if (this.incorrectGuesses >= INCORRECT_GUESS_LIMIT) {
+        if (this.incorrectGuesses.size() >= INCORRECT_GUESS_LIMIT) {
             System.out.println("You lose!");
-            System.out.println("The movie was '" + this.movie + "'");
+            System.out.println("The movie was '" + this.formatMovie(this.movie) + "'.");
+        } else {
+            System.out.println("You win!");
+            System.out.println("You have guessed '" + this.formatMovie(this.movie) + "' correctly.");
         }
     }
 }
