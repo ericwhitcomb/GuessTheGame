@@ -52,6 +52,12 @@ public class Game {
         System.out.println();
     }
 
+    /**
+     * Format movie to include Uppercase letters for first letter in words
+     *
+     * @param movie
+     * @return
+     */
     private String formatMovie(String movie) {
         StringJoiner joiner = new StringJoiner(" ");
         String[] words = movie.split(" ");
@@ -81,7 +87,12 @@ public class Game {
 
     private String promptPlayer() {
         System.out.print("Guess a letter:");
-        return scanner.next();
+        char c = scanner.nextLine().toCharArray()[0];
+        if (Character.getType(c) == Character.UPPERCASE_LETTER ||
+                Character.getType(c) == Character.LOWERCASE_LETTER) {
+            return String.valueOf(c);
+        }
+        return null;
     }
 
     /**
@@ -128,8 +139,15 @@ public class Game {
         this.incorrectGuesses = new ArrayList<String>();
 
         while (this.incorrectGuesses.size() < INCORRECT_GUESS_LIMIT) {
+
             this.display();
+
             String guess = this.promptPlayer();
+            if (guess == null) {
+                System.out.println("Invalid entry. Must enter alphabetic character.");
+                continue;
+            }
+
             if (this.movie.contains(guess.toLowerCase())) {
                 char[] chars = this.maskedMovie.toCharArray();
                 for (int i = this.movie.indexOf(guess.toLowerCase()); i >= 0; i = this.movie.indexOf(guess.toLowerCase(), ++i))
@@ -142,9 +160,9 @@ public class Game {
                     break;
                 }
             } else {
-                // add to incorrectGuesses array
                 if (!this.incorrectGuesses.contains(guess.toLowerCase())) {
                     this.incorrectGuesses.add(guess.toLowerCase());
+                    this.incorrectGuesses.sort(String.CASE_INSENSITIVE_ORDER);
                 }
             }
         }
