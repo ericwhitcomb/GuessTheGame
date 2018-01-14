@@ -4,7 +4,7 @@ import java.util.StringJoiner;
 
 public class Game {
 
-    private static final int INCORRECT_GUESS_LIMIT = 3;
+    private static final int INCORRECT_GUESS_LIMIT = 10;
     private static final char MASKED_CHARACTER = '_';
 
     /**
@@ -101,8 +101,7 @@ public class Game {
      * @return movie
      */
     private String selectRandomMovie() {
-//        return this.movies.get((int) (Math.random() * movies.size() - 1));
-        return this.movies.get(3);
+        return this.movies.get((int) (Math.random() * movies.size() - 1));
     }
 
     /**
